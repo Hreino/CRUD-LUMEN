@@ -24,8 +24,13 @@ $router->get('/estudiantes', function(){
 
 // Route::resource('estudiantes', 'EstudianteController');
 $router ->get('/prueba', ['uses' => 'EstudianteController@index']);
-$router ->post('/prueba/{nombre}/{apellidos}/{edad}/{institucion}', ['uses' => 'EstudianteController@store']);
+$router ->get('/prueba/{id}', ['uses' => 'EstudianteController@cargar']);
 
+$router ->post('/prueba', ['uses' => 'EstudianteController@store']);
+$router -> delete('/prueba/{id}', ['uses' => 'EstudianteController@destroy']);
+$router -> put('/prueba/{id}', ['uses' => 'EstudianteController@update']);
+
+// Route::post('/prueba/{nombre}/{apellidos}/{edad}/{institucion}', ['uses' => 'EstudianteController@store']);
 // $router ->post('/prueba/{nombre}/{apellidos}/{edad}/{institucion}', ['uses' => 'EstudianteController@store']);
 
 

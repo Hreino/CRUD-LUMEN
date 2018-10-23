@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Estudiante as Estudiante;
-
+//prueba para encriptar
+use Illuminate\Support\Facades\Hash;
 
 class EstudianteController extends Controller
 {
@@ -30,9 +31,7 @@ class EstudianteController extends Controller
         return response()->json($listadoEstudiantes);
     }
 
-    public function addnew(){
-        return view('estudiantes.new');
-    }
+    
 
     // /**
     //  * Store a newly created resource in storage.
@@ -40,26 +39,19 @@ class EstudianteController extends Controller
     //  * @param  \Illuminate\Http\Request  $request
     //  * @return \Illuminate\Http\Response
     //  */
-    public function store($nombre, $apellidos, $edad, $institucion)
+    public function store(Request $request)
     {
-        $estudiante = new Estudiante();
 
-        $estudiante->nombre = $nombre;
-        $estudiante->apellidos = $apellidos;
-        $estudiante->edad = $edad;
-        $estudiante->institucion = $institucion;
-
-        // $estudiante->nombre=$request->input('nombre');
-        // $estudiante->apellidos=$request->input('apellidos');
-        // $estudiante->edad=$request->input('edad');
-        // $estudiante->institucion=$request->input('institucion');
-
-       if ($estudiante->save()) {
-          return response()->json("registro guardado");
-       } else {
-           return response()->json("registro no guardado");
-       }
-        // echo(json_encode($estudiante));
+        if($request-> isJson()){
+            $estudiante= Estudiante::create([
+                'nombre'  => $request['nombre'],
+                'apellidos'  => $request['apellidos'],
+                'edad'  => $request['edad'],
+                'institucion'  => Hash::make($request['institucion'])
+            ]);
+            return response() -> json($estudiante, 201);
+        }
+        return response()->json(['error'=>'No autorizado']);
     }
 
     // /**
@@ -80,10 +72,29 @@ class EstudianteController extends Controller
     //  * @param  int  $id
     //  * @return \Illuminate\Http\Response
     //  */
-    // public function update(Request $request, $id)
-    // {
-    //     //
-    // }
+
+
+    public function cargar( $id)
+    {
+        $estudiante= Estudiante::find($id);
+        return response()-> json($estudiante);
+    }
+
+    public function update(Request $request, $id)
+    {        
+        if($request-> isJson()){
+            $estudiante= Estudiante::where('id', '=', $id);
+            $estudiante->update([
+                'nombre'  => $request['nombre'],
+                'apellidos'  => $request['apellidos'],
+                'edad'  => $request['edad'],
+                'institucion'  => Hash::make($request['institucion'])
+            ]);
+            return response() -> json($estudiante, 201);
+        }
+
+        return response()-> json($estudiante);
+    }
 
     // /**
     //  * Remove the specified resource from storage.
@@ -91,8 +102,11 @@ class EstudianteController extends Controller
     //  * @param  int  $id
     //  * @return \Illuminate\Http\Response
     //  */
-    // public function destroy($id)
-    // {
-    //     //
-    // }
+    public function destroy($id)
+    {
+        Estudiante::find($id)->delete();
+        
+        return response()->json("Registro Eliminado");
+    
+    }
 }
